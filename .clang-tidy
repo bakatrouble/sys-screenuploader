@@ -1,0 +1,18 @@
+---
+Checks: >-
+  bugprone-*,
+  google-readability-*,
+  misc-*,
+  modernize-*,
+  readability-*,
+  performance-*,
+  -readability-named-parameter
+# Enable most warnings as errors.
+WarningsAsErrors: >-
+  bugprone-*,
+  clang-*,
+  google-*,
+  misc-*,
+  modernize-*,
+  readability-*,
+  performance-*
