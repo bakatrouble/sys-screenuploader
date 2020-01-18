@@ -67,6 +67,7 @@ dkms.conf
 CMakeCache.txt
 CMakeFiles/
 cmake-build-debug/
+cmake-build-release/
 cmake_install.cmake
 Makefile
 
