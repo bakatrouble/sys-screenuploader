@@ -7,8 +7,9 @@ using namespace std;
 
 class Config {
 public:
-    string host = "undefined";
-    long port = 0;
+    string destination_id = "undefined";
+    string host = "screenuploader.bakatrouble.me";
+    long port = 80;
 
     static Config load();
 };

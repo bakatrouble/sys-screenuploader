@@ -15,6 +15,10 @@ u32 sendFileToServer(string &path, u32 size) {
     Config conf = Config::load();
     fs::path fpath(path);
 
+    if (conf.destination_id == "undefined") {
+        cout << "destination_id is not set in config" << endl;
+    }
+
     int sockfd = socket(AF_INET, SOCK_STREAM, 0);
 
     if (sockfd < 0) {
@@ -43,11 +47,12 @@ u32 sendFileToServer(string &path, u32 size) {
 	cout << "Building request" << endl;
 
 	stringstream ss;
-	ss << "POST /?filename=" << fpath.filename().string() << " HTTP/1.1\r\n"
+	ss << "POST /upload/" << conf.destination_id << "/?filename=" << fpath.filename().string() << " HTTP/1.1\r\n"
 	   << "Host: " << conf.host << ":" << conf.port << "\r\n"
 	   << "Content-Type: application/octet-stream\r\n"
 	   << "Content-Length: " << size << "\r\n"
 	   << "Content-Transfer-Encoding: binary\r\n"
+	   << "Connection: close\r\n"
 	   << "\r\n";
 	string request = ss.str();
 
@@ -68,6 +73,9 @@ u32 sendFileToServer(string &path, u32 size) {
         f.read(buf, readSize);
         bytesSent += send(sockfd, buf, readSize, 0);
     }
+
+    int bytesRecv = recv(sockfd, buf, 0x2000u - 1, 0);
+    buf[bytesRecv] = 0;
 
     f.close();
     delete[] buf;

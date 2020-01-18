@@ -13,8 +13,9 @@ Config Config::load() {
     }
 
     Config conf = {
-        reader.Get("server", "host", "undefined"),
-        reader.GetInteger("server", "port", 0)
+        reader.Get("server", "destination_id", "undefined"),
+        reader.Get("server", "host", "screenuploader.bakatrouble.me"),
+        reader.GetInteger("server", "port", 80),
     };
     return conf;
 }

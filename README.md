@@ -2,12 +2,10 @@
 
 Homebrew Nintendo Switch NSP sysmodule for automatic upload of screen captures to remote server.
 
-Set host and port of a running server script in `/config/sys-screenuploader/config.ini`
+For instructions see [http://screenuploader.bakatrouble.me](https://screenuploader.bakatrouble.me)
 
-Server scripts are located in a `server` directory, feel free to make your ones and contribute to this repo.
+[Website repo](https://github.com/bakatrouble/sys-screenuploader-web)
 
-Currently implemented:
-* Telegram
 
 ### Credits
 
