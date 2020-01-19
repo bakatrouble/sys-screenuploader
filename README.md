@@ -2,7 +2,7 @@
 
 Homebrew Nintendo Switch NSP sysmodule for automatic upload of screen captures to remote server.
 
-For instructions see [http://screenuploader.bakatrouble.me](http://screenuploader.bakatrouble.me)
+For instructions see [https://screenuploader.bakatrouble.me](https://screenuploader.bakatrouble.me)
 
 [Website repo](https://github.com/bakatrouble/sys-screenuploader-web)
 
