@@ -4,4 +4,4 @@
 
 using namespace std;
 
-u32 sendFileToServer(string &path, u32 size);
+bool sendFileToServer(string &path, size_t size);

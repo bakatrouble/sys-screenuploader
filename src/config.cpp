@@ -5,6 +5,7 @@
 using namespace std;
 
 Config Config::load() {
+
     INIReader reader("sdmc:/config/sys-screenuploader/config.ini");
 
     if (reader.ParseError() != 0) {
@@ -12,10 +13,12 @@ Config Config::load() {
         return Config();
     }
 
-    Config conf = {
-        reader.Get("server", "destination_id", "undefined"),
-        reader.Get("server", "host", "screenuploader.bakatrouble.me"),
-        reader.GetInteger("server", "port", 80),
-    };
+    string destid = reader.Get("server", "destination_id", "undefined");
+    string url = reader.Get("server", "url", "https://screenuploader.bakatrouble.me/upload/" + URLplaceholder + "/");
+    if (url.find(URLplaceholder) != string::npos) {
+        url.replace(url.find(URLplaceholder), URLplaceholder.length(), destid);
+    }
+
+    Config conf = { url };
     return conf;
 }

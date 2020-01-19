@@ -3,7 +3,7 @@
 #include <fstream>
 #include <dirent.h>
 #include <iostream>
-#include "sockets.hpp"
+#include "upload.hpp"
 #include "utils.hpp"
 
 using namespace std;
@@ -113,7 +113,7 @@ int main(int argc, char **argv) {
     string tmpItem, lastItem = getLastAlbumItem();
     cout << "Current last item: " << lastItem << endl;
 
-    u32 bytesSent, fs;
+    size_t fs;
     while (true) {
         tmpItem = getLastAlbumItem();
         if (lastItem != tmpItem) {
@@ -122,8 +122,7 @@ int main(int argc, char **argv) {
                 cout << "=============================" << endl;
                 cout << "New item found: " << tmpItem << endl;
                 cout << "Filesize: " << fs << endl;
-                bytesSent = sendFileToServer(tmpItem, fs);
-                if (bytesSent >= 0)
+                if (sendFileToServer(tmpItem, fs))
                     lastItem = tmpItem;
             }
         }
