@@ -68,7 +68,10 @@ bool sendFileToServer(string &path, size_t size) {
             return responseCode == 200;
         } else {
             cout << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+            curl_slist_free_all(chunk);
+            curl_easy_cleanup(curl);
             return false;
         }
     }
+    return false;
 }

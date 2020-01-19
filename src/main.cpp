@@ -8,14 +8,13 @@
 
 using namespace std;
 
-#define HEAP_SIZE 350000
+#define INNER_HEAP_SIZE 0x80000
 
 extern "C" {
     extern u32 __start__;
 
     u32 __nx_applet_type = AppletType_None;
 
-#define INNER_HEAP_SIZE 0x60000
     size_t nx_inner_heap_size = INNER_HEAP_SIZE;
     char nx_inner_heap[INNER_HEAP_SIZE];
 
@@ -24,16 +23,17 @@ extern "C" {
     void __appInit(void);
     void __appExit(void);
 
-    char fake_heap[HEAP_SIZE];
-
     // we override libnx internals to do a minimal init
     void __libnx_initheap(void) {
+        void*  addr = nx_inner_heap;
+        size_t size = nx_inner_heap_size;
+
         extern char *fake_heap_start;
         extern char *fake_heap_end;
 
         // setup newlib fake heap
-        fake_heap_start = fake_heap;
-        fake_heap_end = fake_heap + HEAP_SIZE;
+        fake_heap_start = (char*)addr;
+        fake_heap_end = (char*)addr + size;
     }
 
     void __appInit(void) {
