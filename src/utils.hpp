@@ -7,4 +7,4 @@ namespace fs = filesystem;
 
 
 string getLastAlbumItem();
-size_t filesize(string &path);
+size_t filesize(string path);

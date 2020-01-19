@@ -75,7 +75,7 @@ string getLastAlbumItem() {
     return files.back();
 }
 
-size_t filesize(string &path) {
+size_t filesize(string path) {
     streampos begin, end;
     ifstream f(path, ios::binary);
     begin = f.tellg();

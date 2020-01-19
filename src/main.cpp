@@ -3,19 +3,22 @@
 #include <fstream>
 #include <dirent.h>
 #include <iostream>
+#include <thread>
+#include <vector>
+#include <algorithm>
+#include <curl/curl.h>
 #include "upload.hpp"
 #include "utils.hpp"
 
 using namespace std;
 
-#define HEAP_SIZE 350000
+#define INNER_HEAP_SIZE 0x100000
 
 extern "C" {
     extern u32 __start__;
 
     u32 __nx_applet_type = AppletType_None;
 
-#define INNER_HEAP_SIZE 0x60000
     size_t nx_inner_heap_size = INNER_HEAP_SIZE;
     char nx_inner_heap[INNER_HEAP_SIZE];
 
@@ -24,16 +27,17 @@ extern "C" {
     void __appInit(void);
     void __appExit(void);
 
-    char fake_heap[HEAP_SIZE];
-
     // we override libnx internals to do a minimal init
     void __libnx_initheap(void) {
+        void*  addr = nx_inner_heap;
+        size_t size = nx_inner_heap_size;
+
         extern char *fake_heap_start;
         extern char *fake_heap_end;
 
         // setup newlib fake heap
-        fake_heap_start = fake_heap;
-        fake_heap_end = fake_heap + HEAP_SIZE;
+        fake_heap_start = (char*)addr;
+        fake_heap_end = (char*)addr + size;
     }
 
     void __appInit(void) {
@@ -85,6 +89,8 @@ extern "C" {
             fatalThrow(rc);
 
         fsdevMountSdmc();
+
+        curl_global_init(CURL_GLOBAL_ALL);
     }
 
     void __appExit(void) {
@@ -96,6 +102,13 @@ extern "C" {
         socketExit();
         smExit();
     }
+}
+
+void threadTest(void *log) {
+    svcSleepThread(1e+9);
+    cout << "test1" << endl;
+    svcSleepThread(1e+9);
+    cout << "test2" << endl;
 }
 
 #pragma clang diagnostic push
@@ -114,6 +127,9 @@ int main(int argc, char **argv) {
     cout << "Current last item: " << lastItem << endl;
 
     size_t fs;
+    Result rc;
+    vector<trySend_Thread> threads;
+
     while (true) {
         tmpItem = getLastAlbumItem();
         if (lastItem != tmpItem) {
@@ -121,13 +137,33 @@ int main(int argc, char **argv) {
             if (fs > 0) {
                 cout << "=============================" << endl;
                 cout << "New item found: " << tmpItem << endl;
-                cout << "Filesize: " << fs << endl;
-                if (sendFileToServer(tmpItem, fs))
-                    lastItem = tmpItem;
+                lastItem = tmpItem;
+
+                threads.emplace_back(trySend_Thread { Thread(), tmpItem, fs });
+                auto th = &threads.back();
+                rc = threadCreate(&th->thread, trySend, (void*)th, nullptr, 0x10000, 0x2c, -2);
+                if (R_SUCCEEDED(rc)) {
+                    rc = threadStart(&th->thread);
+                    if (!R_SUCCEEDED(rc)) {
+                        threads.pop_back();
+                    }
+                } else {
+                    threads.pop_back();
+                }
             }
         }
 
-		svcSleepThread(1e+9);
+        for (auto it=threads.begin(); it != threads.end();) {
+            if (it->finished) {
+                cout << "Erasing thread for " << it->path << endl << flush;
+                threadClose(&it->thread);
+                it = threads.erase(it);
+            } else {
+                ++it;
+            }
+        }
+
+		svcSleepThread(1e+8);
     }
 }
 #pragma clang diagnostic pop

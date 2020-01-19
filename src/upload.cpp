@@ -4,6 +4,8 @@
 #include <filesystem>
 #include <curl/curl.h>
 #include "config.hpp"
+#include "utils.hpp"
+#include "upload.hpp"
 
 namespace fs = filesystem;
 
@@ -28,7 +30,7 @@ static size_t _uploadReadFunction(void *ptr, size_t size, size_t nmemb, void *da
     return 0;
 }
 
-bool sendFileToServer(string &path, size_t size) {
+bool sendFileToServer(string &path, size_t &size) {
     Config conf = Config::load();
     fs::path fpath(path);
 
@@ -68,7 +70,23 @@ bool sendFileToServer(string &path, size_t size) {
             return responseCode == 200;
         } else {
             cout << "curl_easy_perform() failed: " << curl_easy_strerror(res) << endl;
+            curl_slist_free_all(chunk);
+            curl_easy_cleanup(curl);
             return false;
         }
     }
+    curl_easy_cleanup(curl);
+    return false;
+}
+
+void trySend(void *arg) {
+    auto *th = (trySend_Thread*)arg;
+    for (int i=0; i<3; i++) {
+        if (sendFileToServer(th->path, th->fs)) {
+            th->finished = true;
+            return;
+        }
+    }
+    cout << "Sending " << th->path << " failed after 3 attempts" << endl;
+    th->finished = true;
 }
