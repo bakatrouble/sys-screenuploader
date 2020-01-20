@@ -27,6 +27,10 @@ Result smcGetEmummcConfig(emummc_mmc_t mmc_id, emummc_config_t *out_cfg, void *o
 }
 
 string getAlbumPath() {
+    // workaround for SX OS
+    if (fs::exists("sdmc:/Emutendo/Album"))
+        return "sdmc:/Emutendo/Album";
+
     string out = "Nintendo/Album";
     static struct {
         char storage_path[0x7F + 1];
@@ -47,10 +51,10 @@ bool isDigitsOnly(const string &str) {
     return str.find_first_not_of("0123456789") == string::npos;
 }
 
-string getLastAlbumItem() {
+string getLastAlbumItem(Config &conf) {
     vector<string> years, months, days, files;
-    string albumPath = getAlbumPath();
-    if (!fs::is_directory(albumPath)) return "no album directory";
+    string albumPath = conf.getAlbumPath().length() > 0 ? conf.getAlbumPath() : getAlbumPath();
+    if (!fs::is_directory(albumPath)) return "<No album directory: " + albumPath + ">";
 
     for (auto &entry : fs::directory_iterator(albumPath))
         if (entry.is_directory() && isDigitsOnly(entry.path().filename()) && entry.path().filename().string().length() == 4)

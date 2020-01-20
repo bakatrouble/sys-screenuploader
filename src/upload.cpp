@@ -28,8 +28,7 @@ static size_t _uploadReadFunction(void *ptr, size_t size, size_t nmemb, void *da
     return 0;
 }
 
-bool sendFileToServer(string &path, size_t size) {
-    Config conf = Config::load();
+bool sendFileToServer(Config &conf, string &path, size_t size) {
     fs::path fpath(path);
 
     FILE *f = fopen(path.c_str(), "rb");
@@ -38,7 +37,7 @@ bool sendFileToServer(string &path, size_t size) {
     CURL *curl = curl_easy_init();
     if (curl) {
         stringstream url;
-        url << conf.url << "?filename=" << fpath.filename().string();
+        url << conf.getUrl() << "?filename=" << fpath.filename().string();
         curl_easy_setopt(curl, CURLOPT_URL, url.str().c_str());
         curl_easy_setopt(curl, CURLOPT_POST, 1L);
         struct curl_slist *chunk = nullptr;

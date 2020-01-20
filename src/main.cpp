@@ -5,6 +5,7 @@
 #include <iostream>
 #include "upload.hpp"
 #include "utils.hpp"
+#include "config.hpp"
 
 using namespace std;
 
@@ -110,19 +111,21 @@ int main(int argc, char **argv) {
     cout << "=============================" << endl << endl << endl;
     cout << "ScreenUploader is starting..." << endl;
 
-    string tmpItem, lastItem = getLastAlbumItem();
+    Config conf = Config::load();
+    string tmpItem, lastItem = getLastAlbumItem(conf);
     cout << "Current last item: " << lastItem << endl;
 
     size_t fs;
     while (true) {
-        tmpItem = getLastAlbumItem();
+        conf.refresh();
+        tmpItem = getLastAlbumItem(conf);
         if (lastItem != tmpItem) {
             fs = filesize(tmpItem);
             if (fs > 0) {
                 cout << "=============================" << endl;
                 cout << "New item found: " << tmpItem << endl;
                 cout << "Filesize: " << fs << endl;
-                if (sendFileToServer(tmpItem, fs))
+                if (sendFileToServer(conf, tmpItem, fs))
                     lastItem = tmpItem;
             }
         }

@@ -10,7 +10,13 @@ const string URLplaceholder = "<destid>";
 
 class Config {
 public:
-    string url = "https://screenuploader.bakatrouble.me/upload/" + URLplaceholder + "/";
-
     static Config load();
+    bool refresh();
+
+    string getUrl();
+    string getAlbumPath();
+
+protected:
+    string m_url = "https://screenuploader.bakatrouble.me/upload/" + URLplaceholder + "/";
+    string m_albumPath = "";
 };
