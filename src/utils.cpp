@@ -55,25 +55,25 @@ string getLastAlbumItem() {
     for (auto &entry : fs::directory_iterator(albumPath))
         if (entry.is_directory() && isDigitsOnly(entry.path().filename()) && entry.path().filename().string().length() == 4)
             years.push_back(entry.path());
-    if (years.empty()) return "no years";
+    if (years.empty()) return "<No years in " + albumPath + ">";
     sort(years.begin(), years.end());
 
     for (auto &entry : fs::directory_iterator(years.back()))
         if (entry.is_directory() && isDigitsOnly(entry.path().filename()) && entry.path().filename().string().length() == 2)
             months.push_back(entry.path());
-    if (months.empty()) return "no months";
+    if (months.empty()) return "<No years in " + years.back() + ">";
     sort(months.begin(), months.end());
 
     for (auto &entry : fs::directory_iterator(months.back()))
         if (entry.is_directory() && isDigitsOnly(entry.path().filename()) && entry.path().filename().string().length() == 2)
             days.push_back(entry.path());
-    if (days.empty()) return "no days";
+    if (days.empty()) return "<No years in " + months.back() + ">";
     sort(days.begin(), days.end());
 
     for (auto &entry : fs::directory_iterator(days.back()))
         if (entry.is_regular_file())
             files.push_back(entry.path());
-    if (files.empty()) return "no files";
+    if (files.empty()) return "<No years in " + days.back() + ">";
     sort(files.begin(), files.end());
 
     return files.back();
