@@ -43,25 +43,29 @@ string getAlbumPath() {
     return out;
 }
 
+bool isDigitsOnly(const string &str) {
+    return str.find_first_not_of("0123456789") == string::npos;
+}
+
 string getLastAlbumItem() {
     vector<string> years, months, days, files;
     string albumPath = getAlbumPath();
     if (!fs::is_directory(albumPath)) return "no album directory";
 
     for (auto &entry : fs::directory_iterator(albumPath))
-        if (entry.is_directory())
+        if (entry.is_directory() && isDigitsOnly(entry.path().filename()))
             years.push_back(entry.path());
     if (years.empty()) return "no years";
     sort(years.begin(), years.end());
 
     for (auto &entry : fs::directory_iterator(years.back()))
-        if (entry.is_directory())
+        if (entry.is_directory() && isDigitsOnly(entry.path().filename()))
             months.push_back(entry.path());
     if (months.empty()) return "no months";
     sort(months.begin(), months.end());
 
     for (auto &entry : fs::directory_iterator(months.back()))
-        if (entry.is_directory())
+        if (entry.is_directory() && isDigitsOnly(entry.path().filename()))
             days.push_back(entry.path());
     if (days.empty()) return "no days";
     sort(days.begin(), days.end());
