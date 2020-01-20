@@ -8,7 +8,7 @@
 
 using namespace std;
 
-#define INNER_HEAP_SIZE 0x80000
+#define INNER_HEAP_SIZE 0x50000
 
 extern "C" {
     extern u32 __start__;
