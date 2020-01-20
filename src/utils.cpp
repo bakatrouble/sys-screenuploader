@@ -53,19 +53,19 @@ string getLastAlbumItem() {
     if (!fs::is_directory(albumPath)) return "no album directory";
 
     for (auto &entry : fs::directory_iterator(albumPath))
-        if (entry.is_directory() && isDigitsOnly(entry.path().filename()))
+        if (entry.is_directory() && isDigitsOnly(entry.path().filename()) && entry.path().filename().string().length() == 4)
             years.push_back(entry.path());
     if (years.empty()) return "no years";
     sort(years.begin(), years.end());
 
     for (auto &entry : fs::directory_iterator(years.back()))
-        if (entry.is_directory() && isDigitsOnly(entry.path().filename()))
+        if (entry.is_directory() && isDigitsOnly(entry.path().filename()) && entry.path().filename().string().length() == 2)
             months.push_back(entry.path());
     if (months.empty()) return "no months";
     sort(months.begin(), months.end());
 
     for (auto &entry : fs::directory_iterator(months.back()))
-        if (entry.is_directory() && isDigitsOnly(entry.path().filename()))
+        if (entry.is_directory() && isDigitsOnly(entry.path().filename()) && entry.path().filename().string().length() == 2)
             days.push_back(entry.path());
     if (days.empty()) return "no days";
     sort(days.begin(), days.end());
