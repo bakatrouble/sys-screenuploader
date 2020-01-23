@@ -117,7 +117,6 @@ int main(int argc, char **argv) {
 
     size_t fs;
     while (true) {
-        conf.refresh();
         tmpItem = getLastAlbumItem(conf);
         if (lastItem != tmpItem) {
             fs = filesize(tmpItem);
