@@ -32,6 +32,12 @@ bool sendFileToServer(Config &conf, string &path, size_t size) {
     fs::path fpath(path);
 
     FILE *f = fopen(path.c_str(), "rb");
+
+    if (f == nullptr) {
+        cout << "fopen() failed" << endl;
+        return false;
+    }
+
     struct upload_info ui = { f, size };
 
     CURL *curl = curl_easy_init();
@@ -72,5 +78,6 @@ bool sendFileToServer(Config &conf, string &path, size_t size) {
             return false;
         }
     }
+    cout << "curl_easy_init() failed" << endl;
     return false;
 }
