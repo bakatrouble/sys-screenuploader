@@ -118,7 +118,7 @@ int main(int argc, char **argv) {
     size_t fs;
     while (true) {
         tmpItem = getLastAlbumItem(conf);
-        if (lastItem != tmpItem) {
+        if (lastItem.compare(tmpItem) < 0) {
             fs = filesize(tmpItem);
             if (fs > 0) {
                 cout << "=============================" << endl;
