@@ -81,6 +81,10 @@ extern "C" {
         if (R_FAILED(rc))
             fatalThrow(rc);
 
+        rc = capsaInitialize();
+        if (R_FAILED(rc))
+            fatalThrow(rc);
+
         rc = fsInitialize();
         if (R_FAILED(rc))
             fatalThrow(rc);
@@ -91,6 +95,7 @@ extern "C" {
     void __appExit(void) {
         fsdevUnmountAll();
         fsExit();
+        capsaExit();
         pminfoExit();
         pmdmntExit();
         nsExit();
@@ -110,6 +115,26 @@ int main(int argc, char **argv) {
 
     cout << "=============================" << endl << endl << endl;
     cout << "ScreenUploader is starting..." << endl;
+
+    Result rc;
+    CapsAlbumStorage storage;
+    FsFileSystem imageFs;
+    rc = capsaGetAutoSavingStorage(&storage);
+    if (!R_SUCCEEDED(rc)) {
+        cout << "capsaGetAutoSavingStorage() failed: " << rc << ", exiting..." << endl;
+        return 0;
+    }
+    rc = fsOpenImageDirectoryFileSystem(&imageFs, (FsImageDirectoryId)storage);
+    if (!R_SUCCEEDED(rc)) {
+        cout << "fsOpenImageDirectoryFileSystem() failed: " << rc << ", exiting..." << endl;
+        return 0;
+    }
+    int mountRes = fsdevMountDevice("img", imageFs);
+    if (mountRes < 0) {
+        cout << "fsdevMountDevice() failed, exiting..." << endl;
+        return 0;
+    }
+    cout << "Mounted " << (storage ? "SD" : "NAND") << " storage" << endl;
 
     Config conf = Config::load();
     string tmpItem, lastItem = getLastAlbumItem(conf);

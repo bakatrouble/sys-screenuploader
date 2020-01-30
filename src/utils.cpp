@@ -3,17 +3,12 @@
 #include <string>
 #include <algorithm>
 #include <fstream>
+#include <iostream>
 
 #include "utils.hpp"
 
 string getAlbumPath() {
-    if (fs::exists("/Emutendo/Album"))
-        return "/Emutendo/Album";
-
-    if (fs::exists("/emuMMC/RAW1/Nintendo/Album"))
-        return "/emuMMC/RAW1/Nintendo/Album";
-
-    return "/Nintendo/Album";
+    return "img:/";
 }
 
 bool isDigitsOnly(const string &str) {
