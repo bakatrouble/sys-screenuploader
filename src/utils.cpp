@@ -17,7 +17,7 @@ bool isDigitsOnly(const string &str) {
 
 string getLastAlbumItem(Config &conf) {
     vector<string> years, months, days, files;
-    string albumPath = conf.getAlbumPath().length() > 0 ? conf.getAlbumPath() : getAlbumPath();
+    string albumPath = getAlbumPath();
     if (!fs::is_directory(albumPath)) return "<No album directory: " + albumPath + ">";
 
     for (auto &entry : fs::directory_iterator(albumPath))

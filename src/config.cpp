@@ -25,17 +25,9 @@ bool Config::refresh() {
     }
     m_url = url;
 
-    string albumPath = reader.Get("directories", "album_path", "");
-    if (albumPath.length() > 0)
-        m_albumPath = albumPath;
-
     return true;
 }
 
 string Config::getUrl() {
     return m_url;
-}
-
-string Config::getAlbumPath() {
-    return m_albumPath;
 }
