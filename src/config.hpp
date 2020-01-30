@@ -2,6 +2,7 @@
 
 #include <string>
 #include <switch.h>
+#include <map>
 
 using namespace std;
 
@@ -13,8 +14,10 @@ public:
     static Config load();
     bool refresh();
 
-    string getUrl();
+    string getUrl(string &tid);
 
 protected:
     string m_url = "https://screenuploader.bakatrouble.me/upload/" + URLplaceholder + "/";
+    string m_defaultDestID;
+    map<string, string> m_titleSettings;
 };

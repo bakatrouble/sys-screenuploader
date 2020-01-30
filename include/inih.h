@@ -330,6 +330,9 @@ public:
     // Return the list of sections found in ini file
     const std::set<std::string>& Sections() const;
 
+    // Return the list of fields for a section found in ini file
+    const std::set<std::string>& Fields(std::string section) const;
+
     // Get a string value from INI file, returning default_value if not found.
     std::string Get(std::string section, std::string name,
                     std::string default_value) const;
@@ -357,7 +360,9 @@ protected:
     int _error;
     std::map<std::string, std::string> _values;
     std::set<std::string> _sections;
+    std::map<std::string, std::set<std::string>> _sectionValues;
     static std::string MakeKey(std::string section, std::string name);
+    static std::string MakeKey(std::string section);
     static int ValueHandler(void* user, const char* section, const char* name,
                             const char* value);
 };
@@ -390,6 +395,11 @@ inline int INIReader::ParseError() const
 inline const std::set<std::string>& INIReader::Sections() const
 {
     return _sections;
+}
+
+inline const std::set<std::string>& INIReader::Fields(std::string section) const
+{
+    return _sectionValues.at(MakeKey(section));
 }
 
 inline std::string INIReader::Get(std::string section, std::string name, std::string default_value) const
@@ -447,6 +457,14 @@ inline std::string INIReader::MakeKey(std::string section, std::string name)
     return key;
 }
 
+inline std::string INIReader::MakeKey(std::string section)
+{
+    std::string key = section;
+    // Convert to lower case to make section lookups case-insensitive
+    std::transform(key.begin(), key.end(), key.begin(), ::tolower);
+    return key;
+}
+
 inline int INIReader::ValueHandler(void* user, const char* section, const char* name,
                             const char* value)
 {
@@ -456,6 +474,7 @@ inline int INIReader::ValueHandler(void* user, const char* section, const char* 
         reader->_values[key] += "\n";
     reader->_values[key] += value;
     reader->_sections.insert(section);
+    reader->_sectionValues[MakeKey(section)].insert(name);
     return 1;
 }
 

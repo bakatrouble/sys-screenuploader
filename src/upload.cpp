@@ -40,10 +40,14 @@ bool sendFileToServer(Config &conf, string &path, size_t size) {
 
     struct upload_info ui = { f, size };
 
+    string tid = path.substr(path.length() - 36, 32);
+    cout << "Title ID: " << tid << endl;
+
     CURL *curl = curl_easy_init();
     if (curl) {
         stringstream url;
-        url << conf.getUrl() << "?filename=" << fpath.filename().string();
+        url << conf.getUrl(tid) << "?filename=" << fpath.filename().string();
+        cout << "Upload URL: " << url.str() << endl;
         curl_easy_setopt(curl, CURLOPT_URL, url.str().c_str());
         curl_easy_setopt(curl, CURLOPT_POST, 1L);
         struct curl_slist *chunk = nullptr;
