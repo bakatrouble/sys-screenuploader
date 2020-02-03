@@ -8,7 +8,7 @@ For instructions see [https://screenuploader.bakatrouble.me](https://screenuploa
 
 [Website repo](https://github.com/bakatrouble/sys-screenuploader-web)
 
-Server implementations are available [here](server_implementations)
+Server implementations for self-hosting are available [here](server_implementations)
 
 
 ### Credits
