@@ -1,5 +1,6 @@
 set(SOURCE_DIR ${PROJECT_SOURCE_DIR}/src)
 
+configure_file(${SOURCE_DIR}/project.h.in ${SOURCE_DIR}/project.h)
 file(GLOB SOURCE_FILES RELATIVE ${SOURCE_DIR}
         "*.c"
         "*.cc"

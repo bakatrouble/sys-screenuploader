@@ -6,6 +6,7 @@
 #include "upload.hpp"
 #include "utils.hpp"
 #include "config.hpp"
+#include "project.h"
 
 using namespace std;
 
@@ -114,7 +115,7 @@ int main(int argc, char **argv) {
     cerr.rdbuf(log.rdbuf());
 
     cout << "=============================" << endl << endl << endl;
-    cout << "ScreenUploader is starting..." << endl;
+    cout << "ScreenUploader v" << APP_VERSION << " is starting..." << endl;
 
     Result rc;
     CapsAlbumStorage storage;

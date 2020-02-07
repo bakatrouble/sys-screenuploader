@@ -3,9 +3,9 @@
 # Refer to the LICENSE file included.
 #
 # libnx CMake template for Nintendo Switch homebrew development.
-project(screenuploader)
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.8)
+project(screenuploader)
 
 list(APPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 include(options)
@@ -45,7 +45,7 @@ set(APP_AUTHOR "bakatrouble")
 
 set(VERSION_MAJOR 0)
 set(VERSION_MINOR 0)
-set(VERSION_MICRO 1)
+set(VERSION_MICRO 8)
 set(APP_VERSION
         "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_MICRO}")
 
