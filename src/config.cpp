@@ -20,6 +20,8 @@ bool Config::refresh() {
     }
 
     m_defaultDestID = reader.Get("server", "destination_id", "undefined");
+    m_uploadScreenshots = reader.GetBoolean("server", "upload_screenshots", true);
+    m_uploadMovies = reader.GetBoolean("server", "upload_movies", true);
 
     if (reader.Sections().count("destinations") > 0) {
         map<string, string> destinations;
@@ -40,6 +42,18 @@ bool Config::refresh() {
         }
     }
 
+    if (reader.Sections().count("title_screenshots") > 0) {
+        for (auto &tid : reader.Fields("title_screenshots")) {
+            m_titleScreenshots[tid] = reader.GetBoolean("title_screenshots", tid, true);
+        }
+    }
+
+    if (reader.Sections().count("title_movies") > 0) {
+        for (auto &tid : reader.Fields("title_movies")) {
+            m_titleMovies[tid] = reader.GetBoolean("title_movies", tid, true);
+        }
+    }
+
     m_url = reader.Get("server", "url", "https://screenuploader.bakatrouble.me/upload/" + URLplaceholder + "/");
 
     return true;
@@ -56,4 +70,16 @@ string Config::getUrl(string &tid) {
         url.replace(url.find(URLplaceholder), URLplaceholder.length(), destID);
     }
     return url;
+}
+
+bool Config::uploadAllowed(string &tid, bool isMovie) {
+    if (isMovie) {
+        if (m_titleMovies.count(tid) > 0)
+            return m_titleMovies[tid];
+        return m_uploadMovies;
+    } else {
+        if (m_titleScreenshots.count(tid) > 0)
+            return m_titleScreenshots[tid];
+        return m_uploadScreenshots;
+    }
 }

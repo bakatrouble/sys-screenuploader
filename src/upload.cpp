@@ -29,6 +29,13 @@ static size_t _uploadReadFunction(void *ptr, size_t size, size_t nmemb, void *da
 }
 
 bool sendFileToServer(Config &conf, string &path, size_t size) {
+    string tid = path.substr(path.length() - 36, 32);
+    cout << "Title ID: " << tid << endl;
+    if (!conf.uploadAllowed(tid, path.back() == '4')) {
+        cout << "Not uploading" << endl;
+        return true;
+    }
+
     fs::path fpath(path);
 
     FILE *f = fopen(path.c_str(), "rb");
@@ -39,9 +46,6 @@ bool sendFileToServer(Config &conf, string &path, size_t size) {
     }
 
     struct upload_info ui = { f, size };
-
-    string tid = path.substr(path.length() - 36, 32);
-    cout << "Title ID: " << tid << endl;
 
     CURL *curl = curl_easy_init();
     if (curl) {
