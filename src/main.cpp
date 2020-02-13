@@ -150,8 +150,15 @@ int main(int argc, char **argv) {
                 cout << "=============================" << endl;
                 cout << "New item found: " << tmpItem << endl;
                 cout << "Filesize: " << fs << endl;
-                if (sendFileToServer(conf, tmpItem, fs))
-                    lastItem = tmpItem;
+                bool sent = false;
+                for (int i=0; i<3; i++) {
+                    sent = sendFileToServer(conf, tmpItem, fs);
+                    if (sent)
+                        break;
+                }
+                lastItem = tmpItem;
+                if (!sent)
+                    cout << "Unable to send file after 3 retries" << endl;
             }
         }
 
