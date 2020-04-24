@@ -50,7 +50,7 @@ bool sendFileToServer(Config &conf, string &path, size_t size) {
     CURL *curl = curl_easy_init();
     if (curl) {
         stringstream url;
-        url << conf.getUrl(tid) << "?filename=" << fpath.filename().string();
+        url << conf.getUrl(tid) << "?filename=" << fpath.filename().string() << conf.getUrlParams() ;
         cout << "Upload URL: " << url.str() << endl;
         curl_easy_setopt(curl, CURLOPT_URL, url.str().c_str());
         curl_easy_setopt(curl, CURLOPT_POST, 1L);

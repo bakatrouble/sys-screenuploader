@@ -15,6 +15,7 @@ public:
     bool refresh();
 
     string getUrl(string &tid);
+    string getUrlParams();
     bool uploadAllowed(string &tid, bool isMovie);
 
 protected:
@@ -25,4 +26,5 @@ protected:
     map<string, string> m_titleSettings;
     map<string, bool> m_titleScreenshots;
     map<string, bool> m_titleMovies;
+    map<string, string> m_urlParams;
 };

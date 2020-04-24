@@ -1,7 +1,9 @@
 #include <iostream>
 #include <inih.h>
 #include <set>
+#include <sstream>
 #include "config.hpp"
+#include "utils.hpp"
 
 using namespace std;
 
@@ -56,6 +58,12 @@ bool Config::refresh() {
 
     m_url = reader.Get("server", "url", "https://screenuploader.bakatrouble.me/upload/" + URLplaceholder + "/");
 
+    if (reader.Sections().count("url_params") > 0) {
+        for (auto &key : reader.Fields("url_params")) {
+            m_urlParams[key] = reader.Get("url_params", key, "");
+        }
+    }
+
     return true;
 }
 
@@ -70,6 +78,16 @@ string Config::getUrl(string &tid) {
         url.replace(url.find(URLplaceholder), URLplaceholder.length(), destID);
     }
     return url;
+}
+
+string Config::getUrlParams() {
+    if (m_urlParams.empty())
+        return "";
+    stringstream ss;
+    for (auto &urlParam : m_urlParams) {
+        ss << "&" << url_encode(urlParam.first) << "=" << url_encode(urlParam.second);
+    }
+    return ss.str();
 }
 
 bool Config::uploadAllowed(string &tid, bool isMovie) {
