@@ -29,19 +29,19 @@ string getLastAlbumItem(Config &conf) {
     for (auto &entry : fs::directory_iterator(years.back()))
         if (entry.is_directory() && isDigitsOnly(entry.path().filename()) && entry.path().filename().string().length() == 2)
             months.push_back(entry.path());
-    if (months.empty()) return "<No years in " + years.back() + ">";
+    if (months.empty()) return "<No months in " + years.back() + ">";
     sort(months.begin(), months.end());
 
     for (auto &entry : fs::directory_iterator(months.back()))
         if (entry.is_directory() && isDigitsOnly(entry.path().filename()) && entry.path().filename().string().length() == 2)
             days.push_back(entry.path());
-    if (days.empty()) return "<No years in " + months.back() + ">";
+    if (days.empty()) return "<No days in " + months.back() + ">";
     sort(days.begin(), days.end());
 
     for (auto &entry : fs::directory_iterator(days.back()))
         if (entry.is_regular_file())
             files.push_back(entry.path());
-    if (files.empty()) return "<No years in " + days.back() + ">";
+    if (files.empty()) return "<No screenshots in " + days.back() + ">";
     sort(files.begin(), files.end());
 
     return files.back();
