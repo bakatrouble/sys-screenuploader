@@ -105,17 +105,28 @@ extern "C" {
     }
 }
 
+static ofstream log;
+
+void openLogFile(bool truncate) {
+    log = ofstream ("sdmc:/config/sys-screenuploader/screenuploader.log", truncate ? ios::trunc : ios::app);
+    cout.rdbuf(log.rdbuf());
+    cerr.rdbuf(log.rdbuf());
+    cout << "=============================" << endl << endl << endl;
+    cout << "ScreenUploader v" << APP_VERSION << " is starting..." << endl;
+}
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
 int main(int argc, char **argv) {
     mkdir("sdmc:/config", 0700);
     mkdir("sdmc:/config/sys-screenuploader", 0700);
-    ofstream log("sdmc:/config/sys-screenuploader/screenuploader.log", ios::app);
-    cout.rdbuf(log.rdbuf());
-    cerr.rdbuf(log.rdbuf());
 
-    cout << "=============================" << endl << endl << endl;
-    cout << "ScreenUploader v" << APP_VERSION << " is starting..." << endl;
+    openLogFile(false);
+    Config conf = Config::load();
+    if (!conf.keepLogs()) {
+        log.close();
+        openLogFile(true);
+    }
 
     Result rc;
     CapsAlbumStorage storage;
@@ -137,7 +148,6 @@ int main(int argc, char **argv) {
     }
     cout << "Mounted " << (storage ? "SD" : "NAND") << " storage" << endl;
 
-    Config conf = Config::load();
     string tmpItem, lastItem = getLastAlbumItem(conf);
     cout << "Current last item: " << lastItem << endl;
 

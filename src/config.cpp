@@ -24,6 +24,7 @@ bool Config::refresh() {
     m_defaultDestID = reader.Get("server", "destination_id", "undefined");
     m_uploadScreenshots = reader.GetBoolean("server", "upload_screenshots", true);
     m_uploadMovies = reader.GetBoolean("server", "upload_movies", true);
+    m_keepLogs = reader.GetBoolean("server", "keep_logs", false);
 
     if (reader.Sections().count("destinations") > 0) {
         map<string, string> destinations;
@@ -100,4 +101,8 @@ bool Config::uploadAllowed(string &tid, bool isMovie) {
             return m_titleScreenshots[tid];
         return m_uploadScreenshots;
     }
+}
+
+bool Config::keepLogs() {
+    return m_keepLogs;
 }
