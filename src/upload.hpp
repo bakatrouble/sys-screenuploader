@@ -5,4 +5,4 @@
 
 using namespace std;
 
-bool sendFileToServer(Config &conf, string &path, size_t size);
+bool sendFileToServer(string &path, size_t size);

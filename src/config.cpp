@@ -1,23 +1,18 @@
 #include <iostream>
 #include <inih.h>
 #include <set>
-#include <sstream>
 #include "config.hpp"
 #include "utils.hpp"
+#include "logger.hpp"
 
 using namespace std;
-
-Config Config::load() {
-    Config conf;
-    conf.refresh();
-    return conf;
-}
 
 bool Config::refresh() {
     INIReader reader("sdmc:/config/sys-screenuploader/config.ini");
 
     if (reader.ParseError() != 0) {
-        cout << "Config parse error " << reader.ParseError() << endl;
+        Logger::get().error() << "Config parse error " << reader.ParseError() << endl;
+        error = true;
         return false;
     }
 
@@ -57,7 +52,7 @@ bool Config::refresh() {
         }
     }
 
-    m_url = reader.Get("server", "url", "https://screenuploader.bakatrouble.me/upload/" + URLplaceholder + "/");
+    m_url = reader.Get("server", "url", defaultUrl);
 
     if (reader.Sections().count("url_params") > 0) {
         for (auto &key : reader.Fields("url_params")) {

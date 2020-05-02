@@ -15,7 +15,7 @@ bool isDigitsOnly(const string &str) {
     return str.find_first_not_of("0123456789") == string::npos;
 }
 
-string getLastAlbumItem(Config &conf) {
+string getLastAlbumItem() {
     vector<string> years, months, days, files;
     string albumPath = getAlbumPath();
     if (!fs::is_directory(albumPath)) return "<No album directory: " + albumPath + ">";

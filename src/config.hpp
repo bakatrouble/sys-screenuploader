@@ -8,10 +8,15 @@ using namespace std;
 
 
 const string URLplaceholder = "<destid>";
+const string defaultUrl = "https://screenuploader.bakatrouble.me/upload/" + URLplaceholder + "/";
 
 class Config {
 public:
-    static Config load();
+    static Config& get() {
+        static Config instance;
+        return instance;
+    }
+
     bool refresh();
 
     string getUrl(string &tid);
@@ -19,8 +24,10 @@ public:
     bool uploadAllowed(string &tid, bool isMovie);
     bool keepLogs();
 
-protected:
-    string m_url = "https://screenuploader.bakatrouble.me/upload/" + URLplaceholder + "/";
+    bool error;
+
+private:
+    string m_url;
     string m_defaultDestID;
     bool m_uploadScreenshots;
     bool m_uploadMovies;

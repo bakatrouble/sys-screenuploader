@@ -7,6 +7,6 @@ using namespace std;
 namespace fs = filesystem;
 
 
-string getLastAlbumItem(Config &conf);
+string getLastAlbumItem();
 size_t filesize(string &path);
 string url_encode(const string &value);

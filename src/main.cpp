@@ -1,11 +1,11 @@
 #include <netinet/in.h>
 #include <switch.h>
-#include <fstream>
 #include <dirent.h>
 #include <iostream>
 #include "upload.hpp"
 #include "utils.hpp"
 #include "config.hpp"
+#include "logger.hpp"
 #include "project.h"
 
 using namespace std;
@@ -90,11 +90,16 @@ extern "C" {
         if (R_FAILED(rc))
             fatalThrow(rc);
 
+        rc = timeInitialize();
+        if (R_FAILED(rc))
+            fatalThrow(rc);
+
         fsdevMountSdmc();
     }
 
     void __appExit(void) {
         fsdevUnmountAll();
+        timeExit();
         fsExit();
         capsaExit();
         pminfoExit();
@@ -105,14 +110,14 @@ extern "C" {
     }
 }
 
-static ofstream log;
+void initLogger(bool truncate) {
+    if (truncate)
+        Logger::get().get().truncate();
 
-void openLogFile(bool truncate) {
-    log = ofstream ("sdmc:/config/sys-screenuploader/screenuploader.log", truncate ? ios::trunc : ios::app);
-    cout.rdbuf(log.rdbuf());
-    cerr.rdbuf(log.rdbuf());
-    cout << "=============================" << endl << endl << endl;
-    cout << "ScreenUploader v" << APP_VERSION << " is starting..." << endl;
+    Logger::get().none() << "=============================" << endl;
+    Logger::get().none() << "=============================" << endl;
+    Logger::get().none() << "=============================" << endl;
+    Logger::get().none() << "ScreenUploader v" << APP_VERSION << " is starting..." << endl;
 }
 
 #pragma clang diagnostic push
@@ -121,55 +126,59 @@ int main(int argc, char **argv) {
     mkdir("sdmc:/config", 0700);
     mkdir("sdmc:/config/sys-screenuploader", 0700);
 
-    openLogFile(false);
-    Config conf = Config::load();
-    if (!conf.keepLogs()) {
-        log.close();
-        openLogFile(true);
-    }
+    initLogger(false);
+    Config::get().refresh();
+    if (Config::get().error)
+        return 0;
+
+    if (!Config::get().keepLogs())
+        initLogger(true);
 
     Result rc;
     CapsAlbumStorage storage;
     FsFileSystem imageFs;
     rc = capsaGetAutoSavingStorage(&storage);
     if (!R_SUCCEEDED(rc)) {
-        cout << "capsaGetAutoSavingStorage() failed: " << rc << ", exiting..." << endl;
+        Logger::get().error() << "capsaGetAutoSavingStorage() failed: " << rc << ", exiting..." << endl;
         return 0;
     }
     rc = fsOpenImageDirectoryFileSystem(&imageFs, (FsImageDirectoryId)storage);
     if (!R_SUCCEEDED(rc)) {
-        cout << "fsOpenImageDirectoryFileSystem() failed: " << rc << ", exiting..." << endl;
+        Logger::get().error() << "fsOpenImageDirectoryFileSystem() failed: " << rc << ", exiting..." << endl;
         return 0;
     }
     int mountRes = fsdevMountDevice("img", imageFs);
     if (mountRes < 0) {
-        cout << "fsdevMountDevice() failed, exiting..." << endl;
+        Logger::get().error() << "fsdevMountDevice() failed, exiting..." << endl;
         return 0;
     }
-    cout << "Mounted " << (storage ? "SD" : "NAND") << " storage" << endl;
+    Logger::get().info() << "Mounted " << (storage ? "SD" : "NAND") << " storage" << endl;
 
-    string tmpItem, lastItem = getLastAlbumItem(conf);
-    cout << "Current last item: " << lastItem << endl;
+    string tmpItem, lastItem = getLastAlbumItem();
+    Logger::get().info() << "Current last item: " << lastItem << endl;
+    Logger::get().close();
 
     size_t fs;
     while (true) {
-        tmpItem = getLastAlbumItem(conf);
+        tmpItem = getLastAlbumItem();
         if (lastItem.compare(tmpItem) < 0) {
             fs = filesize(tmpItem);
             if (fs > 0) {
-                cout << "=============================" << endl;
-                cout << "New item found: " << tmpItem << endl;
-                cout << "Filesize: " << fs << endl;
+                Logger::get().info() << "=============================" << endl;
+                Logger::get().info() << "New item found: " << tmpItem << endl;
+                Logger::get().info() << "Filesize: " << fs << endl;
                 bool sent = false;
                 for (int i=0; i<3; i++) {
-                    sent = sendFileToServer(conf, tmpItem, fs);
+                    sent = sendFileToServer(tmpItem, fs);
                     if (sent)
                         break;
                 }
                 lastItem = tmpItem;
                 if (!sent)
-                    cout << "Unable to send file after 3 retries" << endl;
+                    Logger::get().error() << "Unable to send file after 3 retries" << endl;
             }
+
+            Logger::get().close();
         }
 
 		svcSleepThread(1e+9);
